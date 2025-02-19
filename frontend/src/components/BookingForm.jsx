@@ -5,31 +5,58 @@ const BookingForm = () => {
   const [trainId, setTrainId] = useState('');
   const [userId, setUserId] = useState('');
   const [date, setDate] = useState('');
-  const [searchResult, setSearchResult] = useState(null); // New state for search result
+  const [searchResult, setSearchResult] = useState(null);
 
-  // New search handler
+  // Handle search with date-specific availability
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get(`http://localhost:5000/api/trains/search?trainId=${trainId}&date=${date}`);
-      setSearchResult(response.data);
+      // Using the getTrainsAvailability endpoint for date-specific seats
+      const response = await axios.get(
+        `http://localhost:5000/api/trains/search?trainId=${trainId}&date=${date}`
+      );
+      
+      // Get bookings count for this date
+      const bookingsResponse = await axios.get(
+        `http://localhost:5000/api/trains/availability?trainId=${trainId}&date=${date}`
+      );
+      
+      const availableSeats = response.data.totalSeats - bookingsResponse.data.bookingsCount;
+      
+      setSearchResult({
+        ...response.data,
+        availableSeats: availableSeats
+      });
     } catch (error) {
-      alert(`Error: ${error.response.data.message}`);
+      alert(`Error: ${error.response?.data?.message || 'Failed to search train'}`);
+      setSearchResult(null);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Check if seats are available
+      if (!searchResult || searchResult.availableSeats <= 0) {
+        alert("No seats available for this date");
+        return;
+      }
+
       const response = await axios.post('http://localhost:5000/api/bookings', {
         trainId,
         userId,
         date,
       });
+      
       alert(`Booking successful! Booking ID: ${response.data.bookingId}`);
-      setSearchResult(null); // Clear search result after booking
+      
+      // Clear form after successful booking
+      setSearchResult(null);
+      setTrainId('');
+      setUserId('');
+      setDate('');
     } catch (error) {
-      alert(`Error: ${error.response.data.message}`);
+      alert(`Error: ${error.response?.data?.message || 'Booking failed'}`);
     }
   };
 
@@ -42,35 +69,43 @@ const BookingForm = () => {
           placeholder="Train ID"
           value={trainId}
           onChange={(e) => setTrainId(e.target.value)}
+          required
         />
         <input
           type="date"
           placeholder="Date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
+          min={new Date().toISOString().split('T')[0]}
+          required
         />
         <button type="submit">Search Train</button>
       </form>
 
-      {/* Display search result */}
       {searchResult && (
         <div>
-          <h3>Available Train:</h3>
+          <h3>Available Train for {date}:</h3>
           <div>
             <p>Train Name: {searchResult.trainName}</p>
-            <p>Available Seats: {searchResult.availableSeats}</p>
+            <p>Available Seats for {date}: {searchResult.availableSeats}</p>
             
-            {/* Booking form only shows after search */}
-            <h3>Complete Booking</h3>
-            <form onSubmit={handleSubmit}>
-              <input
-                type="text"
-                placeholder="User ID"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
-              />
-              <button type="submit">Book Ticket</button>
-            </form>
+            {searchResult.availableSeats > 0 ? (
+              <>
+                <h3>Complete Booking</h3>
+                <form onSubmit={handleSubmit}>
+                  <input
+                    type="text"
+                    placeholder="User ID"
+                    value={userId}
+                    onChange={(e) => setUserId(e.target.value)}
+                    required
+                  />
+                  <button type="submit">Book Ticket</button>
+                </form>
+              </>
+            ) : (
+              <p style={{color: 'red'}}>No seats available for this date</p>
+            )}
           </div>
         </div>
       )}

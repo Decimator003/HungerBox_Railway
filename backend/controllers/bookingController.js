@@ -44,4 +44,18 @@ const bookTicket = async (req, res) => {
   }
 };
 
-export { bookTicket };
+const cancelBooking = async (req, res) => {
+  const { bookingId } = req.params;
+  try {
+    const booking = await Booking.findOneAndUpdate(
+      { bookingId },
+      { status: 'CANCELLED' },
+      { new: true }
+    );
+    res.status(200).json(booking);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export { bookTicket, cancelBooking };
