@@ -1,6 +1,6 @@
 // src/components/UserDashboard.jsx (Simplified Booking Page)
 import { useState, useEffect } from 'react'
-import { getTrains, bookTicket } from '../services/api'
+import { getTrains } from '../services/api'
 import TrainList from './TrainList'
 import BookingForm from './BookingForm'
 
@@ -26,14 +26,14 @@ const UserDashboard = () => {
     <div className="dashboard">
       <div className="booking-interface">
         <h1>Book Your Train Tickets</h1>
-        <div className="date-picker">
+        {/* <div className="date-picker">
           <input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
             className="date-input"
           />
-        </div>
+        </div> */}
 
         <TrainList trains={trains} />
         <BookingForm selectedDate={selectedDate} />
