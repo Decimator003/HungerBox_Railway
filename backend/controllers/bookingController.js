@@ -13,7 +13,9 @@ const bookTicket = async (req, res) => {
       return res.status(400).json({ message: 'No seats available.' });
     }
 
-    const booking = new Booking({ trainId, userId, seatNumber, date });
+    const bookingId = 'BK' + Date.now(); // Generate unique bookingId
+
+    const booking = new Booking({bookingId, trainId, userId, seatNumber, date });
     await booking.save();
 
     // Update available seats
