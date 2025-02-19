@@ -60,6 +60,21 @@ const BookingForm = () => {
     }
   };
 
+
+  // In BookingForm.jsx, add this new function
+const handleCancelBooking = async (bookingId) => {
+  try {
+    await axios.delete(`http://localhost:5000/api/bookings/${bookingId}`);
+    alert('Booking cancelled successfully');
+    // Refresh the search results or booking list
+    if (trainId && date) {
+      handleSearch(new Event('submit'));
+    }
+  } catch (error) {
+    alert(`Error: ${error.response?.data?.message || 'Failed to cancel booking'}`);
+  }
+};
+
   return (
     <div>
       <h2>Search Train</h2>
@@ -106,6 +121,17 @@ const BookingForm = () => {
             ) : (
               <p style={{color: 'red'}}>No seats available for this date</p>
             )}
+            <h3>Cancel Booking</h3>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const bookingId = e.target.elements.bookingId.value;
+                handleCancelBooking(bookingId);
+              }}
+            >
+              <input type="text" name="bookingId" placeholder="Booking ID" required />
+              <button type="submit">Cancel Booking</button>
+            </form>
           </div>
         </div>
       )}
