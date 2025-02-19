@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Auth from './components/Auth'
-import UserDashboard from './components/UserDashboard'
+import UserDashboard from './components/UserDashboard.jsx'
 import AdminPanel from './components/AdminPanel'
 import Navbar from './components/Navbar'
 import { checkAuth } from './services/api'
