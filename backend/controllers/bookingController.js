@@ -22,8 +22,11 @@ const bookTicket = async (req, res) => {
     if (!train) {
       return res.status(404).json({ message: 'Train not found.' });
     }
-    if (train.availableSeats <= 0) {
-      return res.status(400).json({ message: 'No seats available.' });
+    const bookingsCount = await Booking.countDocuments({ trainId, date });
+
+    // Check seat availability for the specific date
+    if (bookingsCount >= train.totalSeats) {
+      return res.status(400).json({ message: 'No seats available for this date.' });
     }
 
     const bookingId = 'BK' + Date.now();
@@ -31,8 +34,8 @@ const bookTicket = async (req, res) => {
     const booking = new Booking({bookingId, trainId, userId, date });
     await booking.save();
 
-    // Update available seats
-    train.availableSeats -= 1;
+    // // Update available seats
+    // train.availableSeats -= 1;
     await train.save();
 
     res.status(201).json(booking);
