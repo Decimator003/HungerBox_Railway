@@ -28,7 +28,7 @@ const bookTicket = async (req, res) => {
 
     const bookingId = 'BK' + Date.now();
 
-    const booking = new Booking({bookingId, trainId, userId, seatNumber, date });
+    const booking = new Booking({bookingId, trainId, userId, date });
     await booking.save();
 
     // Update available seats

@@ -4,7 +4,6 @@ import axios from 'axios';
 const BookingForm = () => {
   const [trainId, setTrainId] = useState('');
   const [userId, setUserId] = useState('');
-  const [seatNumber, setSeatNumber] = useState('');
   const [date, setDate] = useState('');
   const [searchResult, setSearchResult] = useState(null); // New state for search result
 
@@ -25,7 +24,6 @@ const BookingForm = () => {
       const response = await axios.post('http://localhost:5000/api/bookings', {
         trainId,
         userId,
-        seatNumber,
         date,
       });
       alert(`Booking successful! Booking ID: ${response.data.bookingId}`);
@@ -70,12 +68,6 @@ const BookingForm = () => {
                 placeholder="User ID"
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
-              />
-              <input
-                type="number"
-                placeholder="Seat Number"
-                value={seatNumber}
-                onChange={(e) => setSeatNumber(e.target.value)}
               />
               <button type="submit">Book Ticket</button>
             </form>
