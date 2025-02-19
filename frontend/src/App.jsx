@@ -1,36 +1,31 @@
-import { useState } from 'react'
-import './App.css'
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useEffect } from 'react';
+import TrainList from './components/TrainList';
+import BookingForm from './components/BookingForm';
 
-function App() {
-  const[jokes, setJokes] = useState([])
+const App = () => {
+  const [trains, setTrains] = useState([]);
 
+  // Fetch trains from the backend
   useEffect(() => {
-    axios.get('/api/jokes')
-    .then(res => {
-      setJokes(res.data)
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  })
+    const fetchTrains = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/trains');
+        setTrains(response.data);
+      } catch (error) {
+        console.error('Error fetching trains:', error);
+      }
+    };
+    fetchTrains();
+  }, []);
 
   return (
-    <>
-      <h1>Decimator</h1>
-      <p>JOKES : {jokes.length}</p>
+    <div className="App">
+      <h1>Railway Reservation System</h1>
+      <TrainList trains={trains} />
+      <BookingForm />
+    </div>
+  );
+};
 
-      {
-        jokes.map((joke) => (
-          <div key={joke.id}>
-            <h2>{joke.title}</h2>
-            <p>{joke.body}</p>
-          </div>
-        ))
-      }
-    </>
-  )
-}
-
-export default App
+export default App;
