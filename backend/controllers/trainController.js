@@ -22,4 +22,18 @@ const addTrain = async (req, res) => {
   }
 };
 
-export { getTrains, addTrain };
+const searchTrain = async (req, res) => {
+  const { trainId, date } = req.query;
+  try {
+    const train = await Train.findOne({ trainId });
+    if (!train) {
+      return res.status(404).json({ message: 'Train not found.' });
+    }
+    // You can add date-based logic here if needed
+    res.json(train);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export { getTrains, addTrain, searchTrain };
